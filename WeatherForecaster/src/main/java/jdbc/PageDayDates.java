@@ -263,7 +263,7 @@ public class PageDayDates {
     private void setDates(){
         try {
             setMaxTemp(pattern.getNumber(getMaxTempTEXT().get(0)));
-            setMinTemp(pattern.getNumber(getMinTempTEXT().get(0)));
+            setMinTemp(pattern.getNumber(getMinTempTEXT().get(0) + " "));
             setDayDate(Integer.parseInt(getDayDateTEXT().get(0)));
             setDayName(getDayNameTEXT().get(0));
             setMonthDate(setMonthNumberMap(getMonthTEXT().get(0)));

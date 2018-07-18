@@ -9,31 +9,39 @@ import java.util.regex.Pattern;
 public class PatternForTemp {
 
     /*
-    Getting 2 ints with only 2 numbs of String
+    patternTwoNumbs - pattern to get 2 numbers from text.
+    patternOneNumb - to get only 1 number from text;
      */
     private Pattern patternTwoNumbs = Pattern.compile("\\d{2}");
     private Pattern patternOneNumb = Pattern.compile("\\d{1}");
 
-
-    public String getNumber(String date){
+    /*
+    This method get int from text , and return a number as String with '+' or '-' at start.
+    Text example: "макс. +25°" or "мин. +15° ".
+     */
+    public String getNumber(String data){
         Matcher matcher = null;
         try {
-            if (date.length() >= 9){
-             matcher = patternTwoNumbs.matcher(date);
-            }else if (date.length() < 9){
-                matcher = patternOneNumb.matcher(date);
+            // I get text(String data), if text length = 10 ("макс. +25°" length = 10)
+            // I use  patternTwoNumbs because I have temp with 2 numbs.
+            // But if text length = 9 ("макс. +5°" length = 9)
+            // I use pattern patternOneNumb, because temp is with only 1 numb.
+            if (data.length() > 9){
+             matcher = patternTwoNumbs.matcher(data);
+            }else if (data.length() <= 9){
+                matcher = patternOneNumb.matcher(data);
             }
         if (matcher.find()){
-                for (int i = 0; i < date.length(); i++){
-                    if (date.charAt(i) == '+'){
+                for (int i = 0; i < data.length(); i++){
+                    // Check a temp symbol '+' or '-', return symbol with temp ("+25", "-5").
+                    if (data.charAt(i) == '+'){
                         return "+" + matcher.group();
                     }
-                    else if (date.charAt(i) == '-'){
+                    else if (data.charAt(i) == '-'){
                         return "-" + matcher.group();
                     }
                 }
         }
-            //throw new Exception();
         } catch (Exception e) {
             System.out.println("Exception : " + e);
             e.printStackTrace();
