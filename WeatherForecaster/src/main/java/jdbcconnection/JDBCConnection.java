@@ -11,6 +11,9 @@ public class JDBCConnection {
     private String url = "jdbc:mysql://localhost:3306/weather_db";
     private Connection connection;
 
+    /*
+    Method with Connection type, to make a JDBC and return connection.
+     */
     public Connection connectionJDBC(){
         try{
             System.out.println("Connecting to jdbc...");

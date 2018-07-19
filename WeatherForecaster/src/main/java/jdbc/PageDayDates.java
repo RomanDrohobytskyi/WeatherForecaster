@@ -26,7 +26,8 @@ public class PageDayDates {
     private String monthName;
 
     /*
-    PageDayDates(Document document) -
+    PageDayDates(Document document) - this is constructor to initialize document and
+    object of PatternForTemp class. Method - setDates(), set all class attributes.
      */
     public PageDayDates(Document document){
         this.document = document;
@@ -35,7 +36,7 @@ public class PageDayDates {
     }
 
     /*
-    Getters and Setters for Temps, Date, Month and Day
+    Getters and Setters for temps & date.
      */
 
     public Document getDocument() {
@@ -105,7 +106,7 @@ public class PageDayDates {
     Return a number of month using key,return type: int.
      */
     public int setMonthNumberMap(String month){
-        Map <String, Integer> map = new HashMap<String, Integer>();
+        Map <String, Integer> map = new HashMap<>();
         map.put("января", 1);
         map.put("февральФевраля", 2);
         map.put("марта", 3);
@@ -118,7 +119,6 @@ public class PageDayDates {
         map.put("октября", 10);
         map.put("ноябрря", 11);
         map.put("декабря", 12);
-        //setMonthDate(map.get(month));
         return map.get(month);
     }
 
@@ -139,7 +139,7 @@ public class PageDayDates {
     [Понедельник, Вторник, Среда, Четверг, Пятница, Суббота, Воскресенье]
      */
     public List<String> getDayNameTEXT() {
-        List<String> days = new ArrayList<String>();
+        List<String> days = new ArrayList<>();
         for (Element day : getDayNames()) {
             days.add(day.getElementsByClass("day-link").text());
         }
@@ -152,7 +152,7 @@ public class PageDayDates {
     [30, 01, 02, 03, 04, 05, 06]
     */
     public List<String> getDayDateTEXT() {
-        List<String> dates = new ArrayList<String>();
+        List<String> dates = new ArrayList<>();
         for (Element date : getDayDates()) {
             dates.add(date.getElementsByClass("date").text());
         }
@@ -165,7 +165,7 @@ public class PageDayDates {
     [апреля, мая, мая, мая, мая, мая, мая]
      */
     public List<String> getMonthTEXT() {
-        List<String> months = new ArrayList<String>();
+        List<String> months = new ArrayList<>();
         for (Element month : getMonth()) {
             months.add(month.getElementsByClass("month").text());
         }
@@ -176,7 +176,7 @@ public class PageDayDates {
     The same but for min temperature TXT.
      */
     public List<String> getMinTempTEXT() {
-        List<String> temp = new ArrayList<String>();
+        List<String> temp = new ArrayList<>();
         for (Element min : getMinTemperature()) {
             temp.add(min.getElementsByClass("min").text());
         }
@@ -187,7 +187,7 @@ public class PageDayDates {
     The same for max temperature TXT.
      */
     public List<String> getMaxTempTEXT() {
-        List<String> temp = new ArrayList<String>();
+        List<String> temp = new ArrayList<>();
         for (Element max : getMaxTemperature()) {
             temp.add(max.getElementsByClass("max").text());
         }

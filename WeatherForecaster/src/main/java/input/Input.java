@@ -6,17 +6,18 @@ public class Input {
 
     private Scanner scanner = new Scanner(System.in);
 
+    /*
+    inputNumber(int start, int end) - method to input a Integer number,
+    where parameter 'start & end' - range.
+     */
     public int inputNumber(int start, int end){
-        boolean flag = true;
-        while (flag) {
+        while (true) {
             try {
                 String numberStr = scanner.nextLine();
                 int number = Integer.parseInt(numberStr);
                 if (number < start || number > end) {
                     System.out.println("Wrong range, try again");
-                    flag = true;
                 } else {
-                    flag = false;
                     return number;
                 }
             } catch (NumberFormatException e) {
@@ -25,7 +26,6 @@ public class Input {
                 System.out.println("Try again!");
             }
         }
-        return 0;
     }
 
     public char[]inputChar(){

@@ -11,7 +11,6 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 
 import static page.Constants.url_Page;
@@ -24,10 +23,10 @@ public class Page {
     private Connection connection;
     private Document document;
     private PageDayDates pageDayDates;
-    private ChecksDB db;
-    private UpdatesMethodsDB update;
-    private InsertsMethodsDB insert;
-    private SelectsMethodsDB select;
+    private ChecksDB checksDB;
+    private UpdatesDB update;
+    private InsertsDB insert;
+    private SelectsDB select;
     private JDBCConnection jdbcConnectionObj ;
 
     private int day;
@@ -38,11 +37,12 @@ public class Page {
     private int monthEnd;
     private int yearEnd;
 
-    private List list;
     private char[] password;
 
     /*
     setPage() - method to get a page-code from website.
+    Then initialize objects of classes:  PageDayDates (parameter - Document), JDBCConnection,
+    ChecksDB, UpdatesDB, InsertsDB, SelectsDB.
     */
     public Page(){
         try {
@@ -50,19 +50,18 @@ public class Page {
             pageDayDates = new PageDayDates(getDocument());
             jdbcConnectionObj = new JDBCConnection();
             this.connection = jdbcConnectionObj.connectionJDBC();
-            db = new ChecksDB(connection);
-            update = new UpdatesMethodsDB(connection);
-            select = new SelectsMethodsDB(connection, pageDayDates);
-            insert = new InsertsMethodsDB(connection, select, db);
-            list = new ArrayList();
+            checksDB = new ChecksDB(connection);
+            update = new UpdatesDB(connection);
+            select = new SelectsDB(connection, pageDayDates);
+            insert = new InsertsDB(connection, select, checksDB);
         }catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /*
-    Getter and Setter for document ( page code-element), getter for page title,
-     getter for password.
+    Getter and Setter for document (html page code-element), getter for page title,
+     getter for password, connection.
      */
     public Document getDocument() {
         return document;
@@ -81,7 +80,7 @@ public class Page {
     }
 
     /*
-     db.selectPassword() - getting a password from DataBase and set password for
+     checksDB.selectPassword() - getting a password from DataBase and set password for
      this class attribute: private char[] password;
      */
     public char[] getPassword() {
@@ -90,16 +89,16 @@ public class Page {
     }
 
     /*
-    checkDay() - activate method - db.checkDates(); In ChecksDB class. Method
+    checkDay() - activate method - checksDB.checkDates() in ChecksDB class. Method
     checking today and last added day.
     */
     public void checkDay(){
-        db.checkDates();
+        checksDB.checkDates();
     }
 
-    /************************************************************************************************************************
-                                                *UPDATES*
-     ************************************************************************************************************************/
+    /*
+    Update methods, to update data in DB, using updates methods in UpdatesDB class.
+     */
     public void updateMinTemp(Input input){
         try {
             System.out.println("Enter day ID to update Min temperature: ");
@@ -107,7 +106,7 @@ public class Page {
             System.out.println("Enter Min temperature ( -40 ... 40 ): ");
             int minTemp = input.inputNumber(-40, 40);
 
-            if (db.checkIDTemp(id)) {
+            if (checksDB.checkIDTemp(id)) {
                 update.updateMinTemp(minTemp, id);
                 System.out.println("Min temperature has been updated.");
             }
@@ -124,7 +123,7 @@ public class Page {
             System.out.println("Enter Max temperature ( -40 ... 40 ): ");
             int maxTemp = input.inputNumber(-40, 40);
 
-            if (db.checkIDTemp(id)) {
+            if (checksDB.checkIDTemp(id)) {
                 if (maxTemp > 0) {
                     update.updateMaxTemp("+" + maxTemp, id);
                     System.out.println("Max temperature updated.");
@@ -158,7 +157,7 @@ public class Page {
                 System.out.println("Enter day date (1 ... 31) : ");
                 int day = input.inputNumber(1, 31);
 
-                if (db.checkIDDate(id)) {
+                if (checksDB.checkIDDate(id)) {
                     System.out.println("Updating day date...");
                     update.updateDay(day, id);
                     System.out.println("Day date has been updated.");
@@ -179,7 +178,7 @@ public class Page {
                 System.out.println("Enter month number (1 ... 12) : ");
                 int month = input.inputNumber(1, 12);
 
-                if (db.checkIDDate(id)) {
+                if (checksDB.checkIDDate(id)) {
                     System.out.println("Updating month date...");
                     update.updateMonth(month, id);
                     System.out.println("Month date has been updated.");
@@ -200,7 +199,7 @@ public class Page {
                 System.out.println("Enter year number (0 ... 2018) : ");
                 int year = input.inputNumber(1, 2018);
 
-                if (db.checkIDDate(id)) {
+                if (checksDB.checkIDDate(id)) {
                     System.out.println("Updating year date...");
                     update.updateYear(year, id);
                     System.out.println("Year date has been updated.");
@@ -220,11 +219,11 @@ public class Page {
     public void updatePassword(Input input, Password password){
         update.updatePassword(input, password, select.selectPassword());
     }
+    // End of update methods.
 
-    /**********************************************************************************************************************************************
-                                        *GETTING DATES*
-     ********************************************************************************************************************************************/
-
+    /*
+    getSelectedDay(Input number) - asking for day date to enter by keyboard and setting into class attributes.
+     */
     public void getSelectedDay(Input number){
         System.out.println("Enter day ( 1 - 31 ): ");
         this.day = number.inputNumber(1, 31);
@@ -234,6 +233,10 @@ public class Page {
         this.year = number.inputNumber(2000, 2018);
     }
 
+    /*
+    getSelectedRange(Input number) - asking for first day date and last date in range to enter by keyboard
+    and setting into class attributes.
+     */
     public void getSelectedRange(Input number){
         System.out.println("Enter first day ( 1 - 31 ): ");
         this.day = number.inputNumber(1, 31);
@@ -250,8 +253,6 @@ public class Page {
         this.yearEnd = number.inputNumber(2000, 2018);
     }
 
-    /**********************************************************************************************************************************************/
-
     /*
     This method - insertDayDateIntoDB(), activate method insert.insertDayDate(pageDayDates) and check bool.
     If true, it`s men that this day is unique and can be added into DB, and activate method -
@@ -264,10 +265,9 @@ public class Page {
         }
     }
 
-    /**********************************************************************************************************************************************
-                                                    *PRINTS*
-     ********************************************************************************************************************************************/
-
+    /*
+    Methods to print data like: day date, temperature. For one day, range or week.
+     */
     public void printAllDays(){
         select.selectAllDays().forEach(element -> System.out.println(Constants.STARS + "\n" + element));
     }
@@ -331,10 +331,11 @@ public class Page {
         System.out.println(Constants.STARS);
         System.out.println(maxTemp + " " + minTemp);
     }
+    //End of print methods.
 
-    /*********************************************************************************************************************************************/
     /*
-     Getting code-element of "sinoptic" page.
+     Getting code-element of "sinoptic" page and set it into class attribute 'Document document'.
+     Time to get a document - 6000millis.
     */
     private void setPage(){
         try {
@@ -360,6 +361,4 @@ public class Page {
            System.out.println("Exception: " + e);
        }
    }
-    /**********************************************************************************************************************************************/
-
 }

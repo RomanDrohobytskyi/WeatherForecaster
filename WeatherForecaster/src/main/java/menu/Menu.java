@@ -15,12 +15,19 @@ public class Menu{
     private Page page;
     private Map<Integer, Runnable> subMenu;
 
+    /*
+    Constructor - to initialize page, input and password objects.
+     */
     public Menu(Page page){
         this.page = page;
-        input = new  Input();
-        password = new Password();
+        this.input = new  Input();
+        this.password = new Password();
     }
 
+    /*
+    SubMenu map initialize. Where key is integer, value - runnable, methods.
+    They contains to numbers in subMenu
+     */
     {
         subMenu = new HashMap<>();
         subMenu.put(0, () -> System.out.println( Constants.STARS + "\n" + "SubMenu logged out."));
@@ -42,6 +49,9 @@ public class Menu{
         subMenu.put(20, () -> globalExit());
     }
 
+    /*
+    Method printing and menu and get your choice. While before you`ll choose EXIT - 0.
+     */
     public void activateMenu() {
         boolean menu = true;
         while (menu){
@@ -52,16 +62,26 @@ public class Menu{
         }
     }
 
+    /*
+    This method run chosen subMenu method. Where parameter 'choice'
+    it`s a number of method in subMenu.
+     */
     public void runMapMenu(int choice){
         subMenu.get(choice).run();
     }
 
+    /*
+    Printing all ENUM value from class EMenu.
+     */
     private void printEnumMenu(){
     for (EMenu element : EMenu.values()){
             System.out.println(element.getElement());
         }
     }
 
+    /*
+    Run method based on EMenu value.
+     */
     private boolean choiceMenu(EMenu menu, Page page){
         try {
             switch (menu) {
@@ -89,7 +109,6 @@ public class Menu{
                     break;
                 case UPDATE:
                     if (password.verifyPassword(page, password.enterPassword(input))) {
-                        System.out.println("SubMenu.");
                         subMenu();
                         break;
                     }
@@ -109,8 +128,11 @@ public class Menu{
             return true;
     }
 
+    /*
+    Return EMenu value based on your choice - getChoice().
+     */
     private EMenu choiceEnum(){
-        switch (getChoice()){
+        switch (getChoice(0, EMenu.values().length - 1)){
             case 1:
                 return EMenu.WEEK;
             case 2:
@@ -133,10 +155,15 @@ public class Menu{
         return null;
     }
 
+    /*
+     This method print subMenu and getting your choice, then run map method based
+     on your choice. While before you`ll chose EXIT - 0.
+     */
     private void subMenu() {
         int choice;
         try {
             do {
+                System.out.println("SubMenu.");
                 System.out.println(Constants.STARS);
                 System.out.println("10 - print all temperatures with days.");
                 System.out.println("1  - print all temperatures.");
@@ -156,10 +183,8 @@ public class Menu{
                 System.out.println("20 - global exit.");
                 System.out.println("0  - exit.");
                 System.out.println(Constants.STARS);
-                System.out.println("Please, enter your choice:");
-                System.out.println(Constants.STARS);
 
-                choice = input.inputNumber(0, 20);
+                choice = getChoice(0, 20);
                 runMapMenu(choice);
 
             } while (choice != 0) ;
@@ -168,13 +193,20 @@ public class Menu{
             }
     }
 
-    private int getChoice(){
+    /*
+    This method getting your choice, parameters - range of menus.
+     */
+    private int getChoice(int start, int end){
         System.out.println("Please, enter your choice:");
         System.out.println(Constants.STARS);
-        int choice = input.inputNumber( 0, EMenu.values().length);
+        int choice = input.inputNumber( start, end);
         return choice;
     }
 
+    /*
+    This method close activate page.closeAll() method if connection ISN`T null.
+    And then exit.
+     */
     public void globalExit(){
         try {
             System.out.println(Constants.STARS);
