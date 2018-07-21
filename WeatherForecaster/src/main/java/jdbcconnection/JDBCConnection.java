@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class JDBCConnection {
 
     private String user = "root";
-    private String pass = "root";
+    private String pass = "";
     private String url = "jdbc:mysql://localhost:3306/weather_db";
     private Connection connection;
 
